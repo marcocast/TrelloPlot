@@ -25,20 +25,45 @@
  */
 package org.marpar.trello.plot;
 
+import java.util.Calendar;
+import java.util.Date;
+
+
 /**
  * @author ActiveEon Team
  * @since 12 Apr 2017
  */
-public class TimeFormatter {
+public class WorkingDays {
 
-    public static String formatTime(long totalDuration) {
-        long seconds = totalDuration / 1000;
-        long minutes = seconds / 60;
-        long hours = minutes / 60;
-        long days = hours / 24;
-        String time = days + " days, " + hours % 24 + " hours " + minutes % 60 + " minutes " + seconds % 60 +
-            " seconds";
-        return time;
+    public static int getWorkingDaysBetweenTwoDates(Date startDate, Date endDate) {
+        Calendar startCal = Calendar.getInstance();
+        startCal.setTime(startDate);
+
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(endDate);
+
+        int workDays = 0;
+
+        //Return 0 if start and end are the same
+        if (startCal.getTimeInMillis() == endCal.getTimeInMillis()) {
+            return 0;
+        }
+
+        if (startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
+            startCal.setTime(endDate);
+            endCal.setTime(startDate);
+        }
+
+        do {
+            //excluding start date
+            startCal.add(Calendar.DAY_OF_MONTH, 1);
+            if (startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY &&
+                startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
+                ++workDays;
+            }
+        } while (startCal.getTimeInMillis() < endCal.getTimeInMillis()); //excluding end date
+
+        return workDays;
     }
 
 }

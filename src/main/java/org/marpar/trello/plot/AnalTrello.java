@@ -2,6 +2,7 @@ package org.marpar.trello.plot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.trello4j.Trello;
@@ -12,11 +13,11 @@ import org.trello4j.model.Card;
 
 public class AnalTrello {
 
-    private static final String TOKEN = "";
+    public static final String API_KEY = Optional.ofNullable(System.getenv("API_KEY")).orElse(System.getProperty("API_KEY"));
 
-    private static final String API_KEY = "";
+    public static final String TOKEN = Optional.ofNullable(System.getenv("TOKEN")).orElse(System.getProperty("TOKEN"));
 
-    private static final String COLUMN_ID = "";
+    private static final String COLUMN_ID = "5812fee10c9e21b5c3ce2260";
 
     public static void main(String[] args) {
         new AnalTrello().timeSpentPerCard();
@@ -29,19 +30,21 @@ public class AnalTrello {
 
         System.out.println("Total cards retrieved : " + actionsPerCard.size());
 
-        actionsPerCard.keySet().stream()
-                .filter(key -> actionsPerCard.get(key)
-                        .size() > 1)
-                .forEach(key -> System.out.println(key.getName() + " took :" +
-                                            TimeFormatter.formatTime(
-                                                actionsPerCard.get(key).get(0).getDate().getTime() -
-                                                actionsPerCard.get(key).get(actionsPerCard.get(key).size() - 1).getDate().getTime())));
+        actionsPerCard.keySet()
+                      .stream()
+                      .filter(key -> actionsPerCard.get(key).size() > 1)
+                      .forEach(key -> System.out.println(key.getName() + " took :" + WorkingDays.getWorkingDaysBetweenTwoDates(
+                                                                                                                               actionsPerCard.get(key)
+                                                                                                                                             .get(actionsPerCard.get(key).size() -
+                                                                                                                                                  1)
+                                                                                                                                             .getDate(),
+                                                                                                                               actionsPerCard.get(key).get(0).getDate()) +
+                                                         " Days"));
 
     }
 
     private Map<Card, List<Action>> actionsPerEachCardInTheList(Trello trello, String listId) {
-        return trello.getCardsByList(listId).parallelStream()
-                .collect(Collectors.toMap(card -> card, card -> trello.getActionsByCard(card.getId())));
+        return trello.getCardsByList(listId).parallelStream().collect(Collectors.toMap(card -> card, card -> trello.getActionsByCard(card.getId())));
     }
 
 }

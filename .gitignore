@@ -3,6 +3,7 @@ classes/
 .gradle/
 .idea/
 *.iml
+.gradle
 
 # /
 *.classpath
