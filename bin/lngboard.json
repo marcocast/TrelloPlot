@@ -1,0 +1,3 @@
+private static final String TOKEN = "77fcf2920e4e2bec7ad453ef616b1eddbab0482a309d342d04d2acc87d7cefbd";
+    private static final String API_KEY = "e0dbcbf486395abbe7524a1e5392b577";
+    private static final String LNG_DONE_COLUMN_ID = "5812fee10c9e21b5c3ce2260";

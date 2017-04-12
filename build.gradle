@@ -1,0 +1,16 @@
+apply plugin: 'java'
+
+repositories {
+
+    jcenter()
+    maven{
+    url "https://raw.github.com/joelso/joelso-mvn-repo/master/snapshots/"
+    }
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    compile group: 'org.trello4j', name: 'trello4j', version: '1.0-SNAPSHOT'
+    testCompile 'junit:junit:4.12'
+}
