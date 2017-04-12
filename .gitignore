@@ -1,0 +1,18 @@
+build/
+classes/
+.gradle/
+.idea/
+*.iml
+
+# /
+*.classpath
+*.project
+*.settings
+/.classpath*
+gradle/ext/
+
+/dist/
+/lib
+/bin
+**/bin
+/out
