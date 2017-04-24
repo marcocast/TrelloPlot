@@ -25,44 +25,47 @@
  */
 package org.marpar.trello.plot;
 
-import java.util.Calendar;
-import java.util.Date;
+import org.trello4j.model.Card;
 
 
 /**
  * @author ActiveEon Team
- * @since 12 Apr 2017
+ * @since 18 Apr 2017
  */
-public class WorkingDays {
+public class MyCard {
+    private Card card;
 
-    public static int getWorkingDaysBetweenTwoDates(Date startDate, Date endDate) {
-        Calendar startCal = Calendar.getInstance();
-        startCal.setTime(startDate);
+    public MyCard(Card card) {
+        this.card = card;
+    }
 
-        Calendar endCal = Calendar.getInstance();
-        endCal.setTime(endDate);
+    public Card getCard() {
+        return card;
+    }
 
-        int workDays = 0;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((card.getId() == null) ? 0 : card.getId().hashCode());
+        return result;
+    }
 
-        //Return 0 if start and end are the same
-        if (startCal.getTimeInMillis() == endCal.getTimeInMillis()) {
-            return 1;
-        }
-
-        if (startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
-            startCal.setTime(endDate);
-            endCal.setTime(startDate);
-        }
-
-        do {
-            //excluding start date
-            startCal.add(Calendar.DAY_OF_MONTH, 1);
-            if (startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && startCal.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-                ++workDays;
-            }
-        } while (startCal.getTimeInMillis() < endCal.getTimeInMillis()); //excluding end date
-
-        return workDays;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MyCard other = (MyCard) obj;
+        if (card == null) {
+            if (other.card != null)
+                return false;
+        } else if (!card.getId().equals(other.card.getId()))
+            return false;
+        return true;
     }
 
 }
