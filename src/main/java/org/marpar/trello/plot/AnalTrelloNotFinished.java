@@ -1,5 +1,6 @@
 package org.marpar.trello.plot;
 
+import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,16 +35,31 @@ public class AnalTrelloNotFinished {
 
         Map<MyCard, List<Action>> allCardsActions = actionsPerEachCardInTheListIncludingTODO(trello, DONE_COLUMN_ID);
 
-        System.out.println("Task;;Priority level;;Number of days from to creation to clarification;;Number of days from clarification to be validated by LNG;;Number of days from clarification to completed;;Notes;;Link");
+        System.out.println("Task;;Priority level;;Date of creation;;Number of days from to creation to clarification;;Number of days from clarification to be validated by LNG;;Number of days from clarification to completed;;Notes;;Link");
 
         allCardsActions.keySet()
                        .stream()
                        .filter(key -> allCardsActions.get(key).size() > 1)
-                       .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + sla(allCardsActions, key) + ";;" +
-                                                          ";;;;" + getHyperlink(key)
+                       .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + getStartDate(allCardsActions, key) +
+                                                          ";;" + sla(allCardsActions, key) + ";;" + ";;;;" + getHyperlink(key)
 
         ));
 
+    }
+
+    /**
+     * @param actionsPerCardWithTODO
+     * @param key
+     * @return
+     */
+    private String getStartDate(Map<MyCard, List<Action>> actionsPerCardWithTODO, MyCard key) {
+        try {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.DEFAULT);
+
+            return "" + df.format(actionsPerCardWithTODO.get(key).get(actionsPerCardWithTODO.get(key).size() - 1).getDate());
+        } catch (Exception e) {
+            return " - ";
+        }
     }
 
     private String getHyperlink(MyCard key) {

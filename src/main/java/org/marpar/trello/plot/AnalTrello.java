@@ -1,5 +1,6 @@
 package org.marpar.trello.plot;
 
+import java.text.DateFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,16 +37,48 @@ public class AnalTrello {
         Map<MyCard, List<Action>> actionsPerCard = actionsPerEachCardInTheList(trello, DONE_COLUMN_ID);
         Map<MyCard, List<Action>> actionsPerCardWithTODO = actionsPerEachCardInTheListIncludingTODO(trello, DONE_COLUMN_ID);
 
-        System.out.println("Task;;Priority level;;Number of days from to creation to clarification;;Number of days from clarification to be validated by LNG;;Number of days from clarification to completed;;Notes;;Link");
+        System.out.println("Task;;Priority level;;Creation Date;;Completion Date;;Number of days from to creation to clarification;;Number of days from clarification to be validated by LNG;;Number of days from clarification to completed;;Notes;;Link");
 
         actionsPerCard.keySet()
                       .stream()
                       .filter(key -> actionsPerCard.get(key).size() > 1)
-                      .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + sla(actionsPerCardWithTODO, key) + ";;" +
+                      .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + getStartDate(actionsPerCardWithTODO, key) +
+                                                         ";;" + getEndDate(actionsPerCardWithTODO, key) + ";;" + sla(actionsPerCardWithTODO, key) + ";;" +
                                                          toQA(actionsPerCard, key) + ";;" + toDone(actionsPerCard, key) + ";;;;" + getHyperlink(key)
 
         ));
 
+    }
+
+    /**
+     * @param actionsPerCardWithTODO
+     * @param key
+     * @return
+     */
+    private String getEndDate(Map<MyCard, List<Action>> actionsPerCardWithTODO, MyCard key) {
+
+        try {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.DEFAULT);
+
+            return "" + df.format(actionsPerCardWithTODO.get(key).get(0).getDate());
+        } catch (Exception e) {
+            return " - ";
+        }
+    }
+
+    /**
+     * @param actionsPerCardWithTODO
+     * @param key
+     * @return
+     */
+    private String getStartDate(Map<MyCard, List<Action>> actionsPerCardWithTODO, MyCard key) {
+        try {
+            DateFormat df = DateFormat.getDateInstance(DateFormat.DEFAULT);
+
+            return "" + df.format(actionsPerCardWithTODO.get(key).get(actionsPerCardWithTODO.get(key).size() - 1).getDate());
+        } catch (Exception e) {
+            return " - ";
+        }
     }
 
     private String getHyperlink(MyCard key) {
@@ -121,13 +154,11 @@ public class AnalTrello {
     }
 
     private Map<MyCard, List<Action>> actionsPerEachCardInTheList(Trello trello, String listId) {
-        return trello.getCardsByList(listId)
-                     .parallelStream()
-                     .collect(Collectors.toMap(card -> new MyCard(card), card -> removeFirstListActions(trello.getActionsByCard(card.getId()))));
+        return trello.getCardsByList(listId).stream().collect(Collectors.toMap(card -> new MyCard(card), card -> removeFirstListActions(trello.getActionsByCard(card.getId()))));
     }
 
     private Map<MyCard, List<Action>> actionsPerEachCardInTheListIncludingTODO(Trello trello, String listId) {
-        return trello.getCardsByList(listId).parallelStream().collect(Collectors.toMap(card -> new MyCard(card), card -> trello.getActionsByCard(card.getId())));
+        return trello.getCardsByList(listId).stream().collect(Collectors.toMap(card -> new MyCard(card), card -> trello.getActionsByCard(card.getId())));
     }
 
 }
