@@ -39,7 +39,6 @@ public class AnalTrelloNotFinished {
 
         allCardsActions.keySet()
                        .stream()
-                       .filter(key -> allCardsActions.get(key).size() > 1)
                        .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + getStartDate(allCardsActions, key) +
                                                           ";;" + sla(allCardsActions, key) + ";;" + ";;;;" + getHyperlink(key)
 
@@ -96,10 +95,14 @@ public class AnalTrelloNotFinished {
     }
 
     private Map<MyCard, List<Action>> actionsPerEachCardInTheListIncludingTODO(Trello trello, String listId) {
-        return trello.getCardsByBoard("5812fea76a3f3c10df9d49b0")
-                     .parallelStream()
-                     .filter(card -> !card.getIdList().equals(DONE_COLUMN_ID))
-                     .collect(Collectors.toMap(card -> new MyCard(card), card -> trello.getActionsByCard(card.getId())));
+        return trello.getCardsByBoard("5812fea76a3f3c10df9d49b0").stream().peek(a -> {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }).filter(card -> !card.getIdList().equals(DONE_COLUMN_ID)).collect(Collectors.toMap(card -> new MyCard(card), card -> trello.getActionsByCard(card.getId())));
     }
 
 }

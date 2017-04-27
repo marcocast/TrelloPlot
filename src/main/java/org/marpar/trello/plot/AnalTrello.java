@@ -41,7 +41,6 @@ public class AnalTrello {
 
         actionsPerCard.keySet()
                       .stream()
-                      .filter(key -> actionsPerCard.get(key).size() > 1)
                       .forEach(key -> System.out.println(key.getCard().getName() + ";;" + joinLabels(key.getCard().getLabels()) + ";;" + getStartDate(actionsPerCardWithTODO, key) +
                                                          ";;" + getEndDate(actionsPerCardWithTODO, key) + ";;" + sla(actionsPerCardWithTODO, key) + ";;" +
                                                          toQA(actionsPerCard, key) + ";;" + toDone(actionsPerCard, key) + ";;;;" + getHyperlink(key)
@@ -154,7 +153,14 @@ public class AnalTrello {
     }
 
     private Map<MyCard, List<Action>> actionsPerEachCardInTheList(Trello trello, String listId) {
-        return trello.getCardsByList(listId).stream().collect(Collectors.toMap(card -> new MyCard(card), card -> removeFirstListActions(trello.getActionsByCard(card.getId()))));
+        return trello.getCardsByList(listId).stream().peek(e -> {
+            try {
+                Thread.sleep(500);
+            } catch (Exception e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }).collect(Collectors.toMap(card -> new MyCard(card), card -> removeFirstListActions(trello.getActionsByCard(card.getId()))));
     }
 
     private Map<MyCard, List<Action>> actionsPerEachCardInTheListIncludingTODO(Trello trello, String listId) {
